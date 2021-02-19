@@ -1,39 +1,69 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
-import { ColorfulMessage } from "./components/ColorfulMessage";
-const App = () => {
-  const [num, setNum] = useState(0); //変数　関数　=useState(初期値)
-  const [faceShowFlag, setfaceShowFlag] = useState(true);
+import React, { useState } from "react";
+import "./styles.css";
 
-  const onClickButton = () => {
-    setNum(num + 1);
+export const App = () => {
+  const [incompleteTodos, setIncompleteTodos] = useState([
+    "あああああ",
+    "いいいいい"
+  ]);
+
+  const [completeTodos, setCompleteTodos] = useState(["うううう", "ええええ"]);
+
+  const [todoText, setTodoText] = useState("");
+  const onChangeTodoText = (event) => setTodoText(event.target.value);
+  const onClickAdd = () => {
+    // alert(todoText);
+    if (todoText === "") return;
+    const newTodos = [...incompleteTodos, todoText]; //今のincompleteTodosをコピー + todoText
+    setIncompleteTodos(newTodos);
+    setTodoText("");
   };
 
-  const onClickSwitchShowFlag = () => {
-    setfaceShowFlag(!faceShowFlag);
+  const onClickDelete = (index) => {
+    // alert(index);
+    const newTodos = [...incompleteTodos];
+    newTodos.splice(index, 1); //してしたindexから何個消すか。
+    setIncompleteTodos(newTodos);
   };
-
-  useEffect(() => {
-    //割り込み処理的な感じ
-    console.log("fefe");
-    if (num % 3 === 0) {
-      faceShowFlag && setfaceShowFlag(false);
-    } else {
-      faceShowFlag || setfaceShowFlag(true);
-    }
-  }, [num]); //numを監視する
-
   return (
     <>
-      <h1 style={{ color: "red" }}>こんにちは</h1>
-      <ColorfulMessage color="blue">お元気ですか</ColorfulMessage>
-      <ColorfulMessage color="pink">元気です！</ColorfulMessage>
-      <button onClick={onClickButton}>ボタン</button>
-      <button onClick={onClickSwitchShowFlag}>on/off</button>
-      <p>{num}</p>
-      {faceShowFlag || <p>U^ェ^U</p>}
+      <div className="input-area">
+        <input
+          placeholder="TODO"
+          value={todoText}
+          onChange={onChangeTodoText}
+        />
+        <button onClick={onClickAdd}>追加</button>
+      </div>
+      <div className="incomplete-area">
+        <p className="title">未完了のTODO</p>
+        <ul>
+          {incompleteTodos.map((todo, index) => {
+            return (
+              <div key={todo} className="list-row">
+                {/* key={todo} 変更前と後のdiffをみるのでkeyを設定しなければならない */}
+                <li>{todo}</li>
+                <button>完了</button>
+                <button onClick={() => onClickDelete(index)}>削除</button>
+              </div>
+            );
+          })}
+        </ul>
+      </div>
+      <div className="complete-area">
+        <p className="title">完了のTODO</p>
+
+        <ul>
+          {completeTodos.map((todo) => {
+            return (
+              <div className="list-row">
+                <li>いいいい</li>
+                <button>戻す</button>
+              </div>
+            );
+          })}
+        </ul>
+      </div>
     </>
   );
 };
-
-export default App; // これで他のファイルでも使えるようになる.グローバル
